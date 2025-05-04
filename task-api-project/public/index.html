@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gestion des Tâches</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      background-color: #f9f9f9;
+    }
+    h1, h2 {
+      color: #333;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      margin-bottom: 0.5rem;
+      background: white;
+      padding: 0.5rem;
+      border-radius: 4px;
+    }
+    button {
+      margin-left: 1rem;
+      background: red;
+      color: white;
+      border: none;
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    form input {
+      padding: 0.3rem;
+      margin-right: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Liste des Tâches</h1>
+  <ul id="taskList"></ul>
+
+  <h2>Ajouter une Tâche</h2>
+  <form id="taskForm">
+    <input type="text" id="title" placeholder="Titre" required />
+    <input type="text" id="description" placeholder="Description" required />
+    <button type="submit">Ajouter</button>
+  </form>
+
+  <script>
+    const apiUrl = 'http://localhost:3000/tasks';
+
+    async function fetchTasks() {
+      const res = await fetch(apiUrl);
+      const tasks = await res.json();
+      const taskList = document.getElementById('taskList');
+      taskList.innerHTML = '';
+
+      tasks.forEach(task => {
+        const li = document.createElement('li');
+        li.textContent = `${task.title} - ${task.description} ${task.isDone ? "✔️" : "❌"}`;
+
+        const btn = document.createElement('button');
+        btn.textContent = "Supprimer";
+        btn.onclick = () => deleteTask(task.id);
+
+        li.appendChild(btn);
+        taskList.appendChild(li);
+      });
+    }
+
+    async function deleteTask(id) {
+      await fetch(`${apiUrl}/${id}`, { method: 'DELETE' });
+      fetchTasks();
+    }
+
+    document.getElementById('taskForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const title = document.getElementById('title').value;
+      const description = document.getElementById('description').value;
+
+      await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, description, isDone: false })
+      });
+
+      e.target.reset();
+      fetchTasks();
+    });
+
+    fetchTasks();
+  </script>
+</body>
+</html>
