@@ -16,10 +16,8 @@ app.get('/', (req, res) => {
 });
 
 
-// Route pour les tâches
-app.use('/tasks', taskRoutes); // <-- ici on "branche" ton routeur
-// ⬇️ Très important : servir les fichiers statiques
-app.use(express.static(path.join(__dirname, '../public')));
 
-
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/index.html'));
+});
 export default app;
