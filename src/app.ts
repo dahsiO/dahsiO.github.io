@@ -17,7 +17,13 @@ app.get('/', (req, res) => {
 
 
 
-app.get('/', (req, res) => {
+// Sert les fichiers statiques (HTML/CSS/JS) depuis le dossier public
+app.use(express.static(path.join(__dirname, '../public')));
+
+// Si aucune autre route n'est matchée, envoie index.html
+app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
-});
+});  
+
+
 export default app;
